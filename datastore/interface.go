@@ -1,6 +1,6 @@
 package datastore
 
-import "web-app/models"
+import "golang-geolocation/models"
 
 type GeoLocationInterface interface {
 	LoadData(csvPath string) (int64, error)

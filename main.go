@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"golang-geolocation/datastore/geolocation"
+	handlerGeoLocation "golang-geolocation/delivery/geolocation"
+	"golang-geolocation/driver"
 	"log"
 	"net/http"
 	"os"
-	"web-app/datastore/geolocation"
-	handlerGeoLocation "web-app/delivery/geolocation"
-	"web-app/driver"
 
 	"github.com/joho/godotenv"
 )

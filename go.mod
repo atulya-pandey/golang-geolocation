@@ -1,4 +1,4 @@
-module web-app
+module golang-geolocation
 
 go 1.18
 

@@ -2,8 +2,9 @@ package geolocation
 
 import (
 	"database/sql"
+	"golang-geolocation/models"
 	"log"
-	"web-app/models"
+
 	"github.com/go-sql-driver/mysql"
 )
 

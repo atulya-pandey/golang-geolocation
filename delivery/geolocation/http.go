@@ -3,11 +3,11 @@ package geolocation
 import (
 	"encoding/json"
 	"fmt"
+	"golang-geolocation/datastore"
+	"golang-geolocation/models"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"web-app/datastore"
-	"web-app/models"
 )
 
 type GeoLocationHandler struct {
