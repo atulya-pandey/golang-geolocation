@@ -1,47 +1,48 @@
 package main
 
 import (
-	"fmt"
-	"golang-geolocation/datastore/geolocation"
-	handlerGeoLocation "golang-geolocation/delivery/geolocation"
-	"golang-geolocation/driver"
+	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
-
+	"github.com/atulya-pandey/golang-geolocation/datastore"
+	"github.com/atulya-pandey/golang-geolocation/geolocation"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	db, err := datastore.ConnectToMySQL()
+
+	if err != nil {
+		log.Println("Could not connect to sql, err:", err)
+		return
+	}
+	
 	envErr := godotenv.Load()
 
 	if envErr != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	conf := driver.MySQLConfig{
-		Host:     os.Getenv("HOST"),
-		User:     os.Getenv("DBUSER"),
-		Password: os.Getenv("DBPASS"),
-		Port:     os.Getenv("PORT"),
-		Db:       os.Getenv("DB"),
-		Net:      "tcp",
+	// Create table
+	log.Printf("Creating Table %s", os.Getenv("TABLENAME"))
+
+	createSqlScriptPath := "sql/geolocation/create_geolocation.sql"
+
+	c, ioErr := ioutil.ReadFile(createSqlScriptPath)
+	if ioErr != nil {
+		log.Fatalf("Failed to load %s", createSqlScriptPath)
 	}
+	createTableSql := string(c)
+	db.Exec(createTableSql)
 
-	var err error
+	datastore := datastore.New(db)
+	importer := geolocation.New(datastore)
 
-	db, err := driver.ConnectToMySQL(conf)
+	parsedCsvPath, _ := importer.Parse("data/data_dump.csv")
 
-	if err != nil {
-		log.Println("Could not connect to sql, err:", err)
-		return
-	}
+	importStatus, err := importer.Import(parsedCsvPath)
+	log.Printf("Import Status: %s", importStatus)
 
-	datastore := geolocation.New(db)
-
-	datastore.LoadData("data/data_dump.csv")
-	handler := handlerGeoLocation.New(datastore)
-
-	http.HandleFunc("/geolocation", handler.Handler)
-	fmt.Println(http.ListenAndServe(":9000", nil))
+	importer.Statistics()
+	
 }

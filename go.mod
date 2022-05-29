@@ -1,4 +1,4 @@
-module golang-geolocation
+module github.com/atulya-pandey/golang-geolocation
 
 go 1.18
 
